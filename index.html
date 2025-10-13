@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Challenge</title>
+<style>
+:root {
+  --bg: #0d0d0f;
+  --fg: #e5e5e5;
+  --accent: #1E88E5;
+  --error: #e63946;
+  --success: #2ecc71;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Inter", Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+h1 {
+  font-weight: 600;
+  font-size: 2.4rem;
+  margin-bottom: 1rem;
+  color: var(--accent);
+}
+#game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255,255,255,0.05);
+  padding: 2rem 3rem;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+}
+#equation {
+  font-size: 2rem;
+  margin: 1.5rem 0;
+}
+#answer {
+  padding: 0.6rem 1rem;
+  font-size: 1.4rem;
+  border-radius: 8px;
+  border: none;
+  text-align: center;
+  background: #1a1a1d;
+  color: var(--fg);
+  width: 150px;
+  outline: none;
+}
+#timer, #score {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  opacity: 0.8;
+}
+button {
+  margin-top: 1.5rem;
+  padding: 0.7rem 1.4rem;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+button:hover {
+  background: #1565c0;
+}
+#lose-screen {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.9);
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--error);
+  text-align: center;
+}
+#lose-screen h2 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+#lose-screen p {
+  color: var(--fg);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.links {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.links button {
+  background: var(--accent);
+  border: none;
+  color: white;
+  font-size: 1rem;
+  padding: 0.7rem 1.4rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  line-height: 1;          /* ✅ keeps it one line tall */
+  white-space: nowrap;     /* ✅ prevents wrapping text */
+  display: inline-flex;    /* ✅ aligns perfectly like Play Again */
+  align-items: center;
+  justify-content: center;
+}
+
+.links button:hover {
+  background: #1565c0;
+  transform: scale(1.05);
+}
+
+
+#positive {
+  position: absolute;
+  top: 10%;
+  font-size: 1.8rem;
+  color: var(--success);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+</style>
+</head>
+<body>
+
+<h1>Math Challenge</h1>
+<div id="game-container">
+  <div id="equation">Loading...</div>
+  <input id="answer" type="text" autocomplete="off" placeholder="Your answer">
+  <div id="timer">⏱ 5s</div>
+  <div id="score">Score: 0</div>
+</div>
+
+<div id="positive"></div>
+
+<div id="lose-screen">
+  <h2>Game Over</h2>
+  <p id="final-score"></p>
+<div class="links">
+  <button id="playAgain">Play Again</button>
+  <button onclick="window.location='leaderboard.html'">Leaderboard</button>
+  <button onclick="window.location='username.html'">Change Username</button>
+</div>
+
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+const supabaseUrl = "";
+const supabaseKey = "";
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+let score = 0, timer = 5, currentAnswer, timerInterval;
+
+const eq = document.getElementById("equation");
+const ans = document.getElementById("answer");
+const timerEl = document.getElementById("timer");
+const scoreEl = document.getElementById("score");
+const loseScreen = document.getElementById("lose-screen");
+const finalScore = document.getElementById("final-score");
+const pos = document.getElementById("positive");
+
+function nextQuestion() {
+  const a = Math.floor(Math.random()*13);
+  const b = Math.floor(Math.random()*13);
+  currentAnswer = a + b;
+  eq.textContent = `${a} + ${b}`;
+  ans.value = "";
+  ans.focus();
+  timer = 5;
+  timerEl.textContent = `⏱ ${timer}s`;
+  clearInterval(timerInterval);
+  timerInterval = setInterval(()=>{
+    timer--;
+    timerEl.textContent = `⏱ ${timer}s`;
+    if(timer<=0) endGame();
+  },1000);
+}
+
+function showPositive(){
+  pos.textContent = ["Nice!","Good!","Great!","Awesome!"][Math.floor(Math.random()*4)];
+  pos.style.opacity = 1;
+  setTimeout(()=>pos.style.opacity=0,800);
+}
+
+ans.addEventListener("keydown",e=>{
+  if(e.key==="Enter"){
+    const val = parseInt(ans.value);
+    if(val===currentAnswer){
+      score++; scoreEl.textContent=`Score: ${score}`; showPositive(); nextQuestion();
+    } else endGame();
+  }
+});
+
+async function endGame(){
+  clearInterval(timerInterval);
+  loseScreen.style.display="flex";
+  finalScore.textContent=`Your score: ${score}`;
+  const username = localStorage.getItem("username");
+  if(username){
+    const { error } = await supabase.from("leaderboard").insert([{ name: username, score }]);
+    if(error) console.error("Insert error:",error.message);
+  }
+}
+
+document.getElementById("playAgain").addEventListener("click",()=>{
+  loseScreen.style.display="none";
+  score=0; scoreEl.textContent="Score: 0";
+  nextQuestion();
+});
+
+nextQuestion();
+</script>
+</body>
+</html>
