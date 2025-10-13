@@ -7,8 +7,3 @@ Timed math challenge with random equations
 Username entry and automatic score saving
 
 Online leaderboard (via Supabase)
-
-Clean, minimal dark UI
-
-Fully front-end (no backend server required)
-
