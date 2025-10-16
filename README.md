@@ -15,7 +15,8 @@ username.html
 <img width="1168" height="921" alt="_C__Users_samru_OneDrive_Desktop_github_math%20game_username html" src="https://github.com/user-attachments/assets/dffb55fb-73f5-4904-8bac-c1064671abe9" />
 
 leaderbaord.html
-<img width="1168" height="921" alt="_C__Users_samru_OneDrive_Desktop_github_math%20game_username html" src="https://github.com/user-attachments/assets/7be0acf0-f62e-47d0-baa2-8f162fe33a44" />
+<img width="1149" height="1030" alt="_C__Users_samru_OneDrive_Desktop_github_math%20game_leaderboard html" src="https://github.com/user-attachments/assets/eb82ae63-37c8-44d8-9d11-922060ab1d52" />
+
 
 Game Over Screen
 <img width="1168" height="921" alt="_C__Users_samru_OneDrive_Desktop_github_math%20game_index html (1)" src="https://github.com/user-attachments/assets/d8f53bb5-d1f5-4b31-9806-bf9890ff1f18" />
